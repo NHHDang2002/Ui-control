@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useState } from 'react';
-import Hero from './app/Hero';
+import Header from './app/Header';
 import FilterFile from './app/FilterFile';
 import { Button, Modal } from 'antd';
 import AddMedia from './app/AddMedia';
@@ -28,7 +28,7 @@ function App() {
             Open Modal
           </Button>
           <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-            <Hero />
+            <Header />
             <FilterFile />
             <AddMedia />
             <FileList />

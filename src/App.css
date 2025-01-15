@@ -26,3 +26,27 @@
 .file-type {
   margin-right: 10px;
 }
+
+.file-size {
+  margin-left: 10px;
+}
+
+.selected-sort:hover {
+  color: red; /* Đổi màu chữ khi hover */
+  cursor: pointer; /* Thay đổi con trỏ thành hình tay khi hover */
+  background-color: #f0f0f0; /* Thêm màu nền khi hover */
+}
+
+.add-file {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+.add-from-url {
+  margin-left: 10px;
+}
+
+.ant-upload-hint {
+  padding-top: 20px;
+}

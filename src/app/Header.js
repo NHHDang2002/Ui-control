@@ -8,8 +8,8 @@ export default function Hero() {
     <div className="hero">
       <SearchFile />
       <div className="hero-right">
-        <View />
         <Sort />
+        <View />
       </div>
     </div>
   );

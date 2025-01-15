@@ -1,0 +1,28 @@
+.input-container {
+  display: inline-block;
+}
+
+.App {
+  background-color: white;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.hero-right {
+  float: right;
+  margin: 0px 20px;
+}
+
+.filter-file {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+
+.file-type {
+  margin-right: 10px;
+}

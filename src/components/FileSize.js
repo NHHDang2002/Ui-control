@@ -23,8 +23,8 @@ export default function FileSize() {
             <Form.Item label="Max size (MB)" name="maxSize">
               <Input placeholder="Enter max size" />
             </Form.Item>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Button type="link" onClick={handleClear}>
+            <div>
+              <Button style={{ padding: 0 }} type="link" onClick={handleClear}>
                 Clear
               </Button>
             </div>

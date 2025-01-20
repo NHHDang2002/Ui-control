@@ -57,3 +57,8 @@
 .image-element:hover {
   background-color: aqua;
 }
+
+.file-item:hover {
+  transform: scale(1.01); 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8); 
+}

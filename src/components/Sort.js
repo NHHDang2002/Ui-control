@@ -21,7 +21,7 @@ export default function Sort() {
             checked={selectedSort === item.key}
             onClick={() => handleSortClick({ key: item.key })} // Cập nhật trạng thái khi radio được click
           >
-            {item.label}
+            <span className="group-hover:text-blue-500">{item.label}</span>
           </Radio>
         </span>
       ),

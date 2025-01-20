@@ -46,7 +46,7 @@ export default function AddMedia({ onSelectedFilesChange }) {
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
-      setVisibleFiles(uploadedFiles.slice(0, 5));
+      setVisibleFiles(uploadedFiles.slice(0, 10));
       setLoading(false);
     }, 500);
   }, [uploadedFiles]);
@@ -75,15 +75,15 @@ export default function AddMedia({ onSelectedFilesChange }) {
     setSelectedFiles((prevSelected) => {
       const updatedSelectedFiles = checked
         ? [...prevSelected, file]
-        : prevSelected.filter((selectedFile) => selectedFile.url !== file.url);   
+        : prevSelected.filter((selectedFile) => selectedFile.url !== file.url);
       onSelectedFilesChange(updatedSelectedFiles);
-      return updatedSelectedFiles; // Cập nhật trạng thái nội bộ
+      return updatedSelectedFiles;
     });
   };
-  
 
   const handleDropdownClick = (e) => {
     e.stopPropagation();
+    setDropdownVisible(!dropdownVisible);
   };
 
   const formatFileName = (fileName) => {
@@ -93,10 +93,10 @@ export default function AddMedia({ onSelectedFilesChange }) {
     return fileName;
   };
 
-  const getFileExtension = (fileName) => {
-    const extension = fileName.split('.').pop().toUpperCase();
-    return extension;
-  };
+  // const getFileExtension = (fileName) => {
+  //   const extension = fileName.split('.').pop().toUpperCase();
+  //   return extension;
+  // };
 
   const urls = [
     {
@@ -130,17 +130,20 @@ export default function AddMedia({ onSelectedFilesChange }) {
             display: 'flex',
             justifyContent: 'center',
             gap: '10px',
-            padding: '10px',
           }}
         >
-          <div>
-            <Button type="primary">Add Media</Button>
-          </div>
+          {loading ? (
+            <Spin style={{ display: 'block', textAlign: 'center', marginTop: 20 }} />
+          ) : (
+            <div>
+              <Button type="primary">Add Media</Button>
+            </div>
+          )}
           <Dropdown
             menu={{ items: urls }}
             trigger={['click']}
             open={dropdownVisible}
-            onOpenChange={setDropdownVisible}
+            onOpenChange={(visible) => setDropdownVisible(visible)}
             placement="bottom"
           >
             <div>
@@ -154,62 +157,80 @@ export default function AddMedia({ onSelectedFilesChange }) {
           <p className="ant-upload-hint">Drag and drop Images, videos, 3D models and file</p>
         </div>
       </Dragger>
-      {loading ? (
-        <Spin style={{ display: 'block', textAlign: 'center', marginTop: 20 }} />
-      ) : (
-        <List
-          grid={{
-            gutter: 16,
-            xs: 1,
-            sm: 2,
-            md: 4,
-            lg: 4,
-            xl: 5,
-            xxl: 3,
-          }}
-          dataSource={visibleFiles}
-          renderItem={(file) => (
-            <List.Item>
-              <div className="file-item" style={{ position: 'relative' }}>
+
+      <List
+        grid={{
+          gutter: 16,
+          xs: 1,
+          sm: 2,
+          md: 4,
+          lg: 4,
+          xl: 5,
+          xxl: 6,
+        }}
+        dataSource={visibleFiles}
+        renderItem={(file) => (
+          <List.Item>
+            <div
+              className="file-item"
+              style={{
+                position: 'relative',
+                hover: 'gray',
+                borderRadius: '4px',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                className="checkbox-container"
+                style={{ position: 'absolute', top: 5, left: 13, zIndex: 2 }}
+              >
+                <Checkbox
+                  checked={selectedFiles.some((selectedFile) => selectedFile.url === file.url)}
+                  onChange={(e) => handleCheckboxChange(file, e.target.checked)}
+                />
+              </div>
+
+              {file.url ? (
+                <img
+                  src={file.url}
+                  alt={file.name}
+                  style={{
+                    width: 'calc(100% - 10px)',
+                    height: 'calc(150px - 17px)',
+                    objectFit: 'cover',
+                    border: '5px solid white',
+                    borderRadius: '4px',
+                    marginLeft: '5px',
+                    cursor: 'pointer',
+                    zIndex: '1',
+                  }}
+                  onClick={() => {
+                    const isChecked = selectedFiles.some(
+                      (selectedFile) => selectedFile.url === file.url,
+                    );
+                    handleCheckboxChange(file, !isChecked); // Thay đổi trạng thái checkbox khi click vào hình ảnh
+                  }}
+                />
+                
+              ) : (
+                <InboxOutlined style={{ fontSize: 24 }} />
+              )}
+              <div className="file-info" style={{ textAlign: 'center' }}>
+                <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-name">
+                  {formatFileName(file.name)}
+                </a>
                 <div
-                  className="checkbox-container"
-                  style={{ position: 'absolute', top: 5, left: 5, zIndex: 2 }}
+                  className="file-extension"
+                  style={{ fontSize: '14px', fontWeight: 'bold', textAlign: 'center' }}
                 >
-                  <Checkbox
-                    onChange={(e) => handleCheckboxChange(file, e.target.checked)}
-                  />
-                </div>
-                {file.url ? (
-                  <img
-                    src={file.url}
-                    alt={file.name}
-                    style={{
-                      width: '100%',
-                      objectFit: 'cover',
-                      border: '5px solid white',
-                      borderRadius: '4px',
-                    }}
-                  />
-                ) : (
-                  <InboxOutlined style={{ fontSize: 24 }} />
-                )}
-                <div className="file-info">
-                  <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-name">
-                    {formatFileName(file.name)}
-                  </a>
-                  <div
-                    className="file-extension"
-                    style={{ fontSize: '14px', fontWeight: 'bold', textAlign: 'center', marginTop: '10px' }}
-                  >
-                    {getFileExtension(file.name)}
-                  </div>
+                  {/* {getFileExtension(file.name)} */}
                 </div>
               </div>
-            </List.Item>
-          )}
-          style={{ marginTop: 16 }}
-        />
-      )}
+            </div>
+          </List.Item>
+        )}
+        style={{ marginTop: 16 }}
+      />
     </div>
   );
 }

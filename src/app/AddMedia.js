@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, message, Upload, Form, Input, Dropdown, List, Checkbox } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, message, Upload, Form, Input, Dropdown, List, Checkbox, Spin } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 
 export default function AddMedia({ onSelectedFilesChange }) {
@@ -39,7 +39,17 @@ export default function AddMedia({ onSelectedFilesChange }) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [newLink, setNewLink] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [visibleFiles, setVisibleFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setVisibleFiles(uploadedFiles.slice(0, 5));
+      setLoading(false);
+    }, 500);
+  }, [uploadedFiles]);
 
   const isValidURL = (url) => {
     try {
@@ -62,15 +72,15 @@ export default function AddMedia({ onSelectedFilesChange }) {
   };
 
   const handleCheckboxChange = (file, checked) => {
-    if (checked) {
-      setSelectedFiles((prevSelected) => [...prevSelected, file]);
-    } else {
-      setSelectedFiles((prevSelected) =>
-        prevSelected.filter((selectedFile) => selectedFile.url !== file.url),
-      );
-    }
-    onSelectedFilesChange(selectedFiles);
+    setSelectedFiles((prevSelected) => {
+      const updatedSelectedFiles = checked
+        ? [...prevSelected, file]
+        : prevSelected.filter((selectedFile) => selectedFile.url !== file.url);   
+      onSelectedFilesChange(updatedSelectedFiles);
+      return updatedSelectedFiles; // Cập nhật trạng thái nội bộ
+    });
   };
+  
 
   const handleDropdownClick = (e) => {
     e.stopPropagation();
@@ -84,7 +94,7 @@ export default function AddMedia({ onSelectedFilesChange }) {
   };
 
   const getFileExtension = (fileName) => {
-    const extension = fileName.split('.').pop().toUpperCase(); // Lấy phần mở rộng (jpg, png, ...)
+    const extension = fileName.split('.').pop().toUpperCase();
     return extension;
   };
 
@@ -115,19 +125,17 @@ export default function AddMedia({ onSelectedFilesChange }) {
   return (
     <div>
       <Dragger {...props} showUploadList={false} style={{ zIndex: 1, position: 'relative' }}>
-        <p className="ant-upload-hint">Drag and drop Images, videos, 3D models and file</p>
-
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -95%)',
             display: 'flex',
-            gap: '4px',
+            justifyContent: 'center',
+            gap: '10px',
+            padding: '10px',
           }}
         >
-          <Button type="primary">Add Media</Button>
+          <div>
+            <Button type="primary">Add Media</Button>
+          </div>
           <Dropdown
             menu={{ items: urls }}
             trigger={['click']}
@@ -135,80 +143,73 @@ export default function AddMedia({ onSelectedFilesChange }) {
             onOpenChange={setDropdownVisible}
             placement="bottom"
           >
-            <Button type="link" onClick={handleDropdownClick}>
-              Add from URL
-            </Button>
+            <div>
+              <Button type="link" onClick={handleDropdownClick}>
+                Add from URL
+              </Button>
+            </div>
           </Dropdown>
         </div>
+        <div>
+          <p className="ant-upload-hint">Drag and drop Images, videos, 3D models and file</p>
+        </div>
       </Dragger>
-      <List
-        grid={{
-          gutter: 16,
-          xs: 1,
-          sm: 2,
-          md: 4,
-          lg: 4,
-          xl: 5,
-          xxl: 3,
-        }}
-        dataSource={uploadedFiles}
-        renderItem={(file) => (
-          <List.Item>
-            <List.Item.Meta
-              avatar={
-                file.url ? (
-                  <div style={{ position: 'relative', width: 200, height: 200 }}>
-                    <Checkbox
-                      style={{
-                        position: 'absolute',
-                        top: 4,
-                        left: 6,
-                        zIndex: 2,
-                      }}
-                      onChange={(e) => handleCheckboxChange(file, e.target.checked)}
-                    />
-                    <div className="cursor-pointer" style={{ width: 100, height: 100 }}>
-                      <img
-                        src={file.url}
-                        alt={file.name}
-                        style={{
-                          width: 100,
-                          height: 100,
-                          objectFit: 'cover',
-                          border: '5px solid white',
-                          borderRadius: '4px',
-                        }}
-                      />
-                    </div>
-                  </div>
+      {loading ? (
+        <Spin style={{ display: 'block', textAlign: 'center', marginTop: 20 }} />
+      ) : (
+        <List
+          grid={{
+            gutter: 16,
+            xs: 1,
+            sm: 2,
+            md: 4,
+            lg: 4,
+            xl: 5,
+            xxl: 3,
+          }}
+          dataSource={visibleFiles}
+          renderItem={(file) => (
+            <List.Item>
+              <div className="file-item" style={{ position: 'relative' }}>
+                <div
+                  className="checkbox-container"
+                  style={{ position: 'absolute', top: 5, left: 5, zIndex: 2 }}
+                >
+                  <Checkbox
+                    onChange={(e) => handleCheckboxChange(file, e.target.checked)}
+                  />
+                </div>
+                {file.url ? (
+                  <img
+                    src={file.url}
+                    alt={file.name}
+                    style={{
+                      width: '100%',
+                      objectFit: 'cover',
+                      border: '5px solid white',
+                      borderRadius: '4px',
+                    }}
+                  />
                 ) : (
                   <InboxOutlined style={{ fontSize: 24 }} />
-                )
-              }
-              title={
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 100,
-                    left: 0,
-                  }}
-                >
-                  <div style={{ fontSize: '12px '}}>
-                  <a href={file.url} target="_blank" rel="noopener noreferrer">
-                  {formatFileName(file.name)}
+                )}
+                <div className="file-info">
+                  <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-name">
+                    {formatFileName(file.name)}
                   </a>
+                  <div
+                    className="file-extension"
+                    style={{ fontSize: '14px', fontWeight: 'bold', textAlign: 'center', marginTop: '10px' }}
+                  >
+                    {getFileExtension(file.name)}
                   </div>
-                  <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', textAlign: 'center' }}>
-                {getFileExtension(file.name)} {/* Hiển thị định dạng file */}
-              </div>
                 </div>
-                
-              }
-            />
-          </List.Item>
-        )}
-        style={{ marginTop: 16 }}
-      />
+              </div>
+            </List.Item>
+          )}
+          style={{ marginTop: 16 }}
+        />
+      )}
     </div>
   );
 }

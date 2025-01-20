@@ -30,7 +30,6 @@ export default function ModalAddFile() {
       <Modal
         style={{ top: 20 }}
         width="60%"
-        height="80%"
         title="Select file"
         open={isModalOpen}
         onOk={handleOk}

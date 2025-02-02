@@ -4,11 +4,9 @@ import FilterFile from '../app/FilterFile';
 import { Button, Modal } from 'antd';
 import AddMedia from '../app/AddMedia';
 
-
 export default function ModalAddFile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
- 
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -37,7 +35,7 @@ export default function ModalAddFile() {
         onOk={handleOk}
         onCancel={handleCancel}
         okButtonProps={{
-          disabled: selectedFiles.length === 0
+          disabled: selectedFiles.length === 0,
         }}
       >
         <Header />

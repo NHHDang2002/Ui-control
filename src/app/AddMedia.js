@@ -4,7 +4,6 @@ import { InboxOutlined } from '@ant-design/icons';
 
 export default function AddMedia({ onSelectedFilesChange }) {
   const { Dragger } = Upload;
-
   const props = {
     name: 'file',
     multiple: true,
@@ -46,10 +45,15 @@ export default function AddMedia({ onSelectedFilesChange }) {
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
-      setVisibleFiles(uploadedFiles.slice(0, 10));
+      setVisibleFiles(uploadedFiles.slice(0, uploadedFiles.length));
       setLoading(false);
     }, 500);
   }, [uploadedFiles]);
+
+  useEffect(() => {
+    // Đồng bộ trạng thái selectedFiles với component cha sau khi render hoàn tất
+    onSelectedFilesChange(selectedFiles);
+  }, [selectedFiles, onSelectedFilesChange]);
 
   const isValidURL = (url) => {
     try {
@@ -76,7 +80,7 @@ export default function AddMedia({ onSelectedFilesChange }) {
       const updatedSelectedFiles = checked
         ? [...prevSelected, file]
         : prevSelected.filter((selectedFile) => selectedFile.url !== file.url);
-      onSelectedFilesChange(updatedSelectedFiles);
+      // onSelectedFilesChange(updatedSelectedFiles);
       return updatedSelectedFiles;
     });
   };
@@ -211,7 +215,6 @@ export default function AddMedia({ onSelectedFilesChange }) {
                     handleCheckboxChange(file, !isChecked); // Thay đổi trạng thái checkbox khi click vào hình ảnh
                   }}
                 />
-                
               ) : (
                 <InboxOutlined style={{ fontSize: 24 }} />
               )}
